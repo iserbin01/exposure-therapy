@@ -47,7 +47,7 @@ public class LampControl : MonoBehaviour
     {
         float startTime;
         float endTime;
-        Debug.Log("Lmap is on");
+        Debug.Log("Lamp is on");
         GameObject.Find("lamp_on").GetComponent<MeshRenderer>().enabled = true;
         GameObject.Find("lamp_off").GetComponent<MeshRenderer>().enabled = false;
         startTime = Time.time;
