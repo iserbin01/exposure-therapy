@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.IO;
 
 public class LampControl : MonoBehaviour
 {
     private bool pressed;
-    string filePath;
-    string results;
+    string filePath, results, scene;
+    int id, session;
     StreamWriter writer;
     FileStream stream;
     FileInfo file;
@@ -15,7 +16,12 @@ public class LampControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        scene = SceneManager.GetActiveScene().name;
+        id = GameObject.Find("SessionInfo").GetComponent<SessionManager>().id;
+        session = GameObject.Find("SessionInfo").GetComponent<SessionManager>().session;
         StartCoroutine(LampTasks());
+       
+
     }
 
       IEnumerator LampTasks()
@@ -26,12 +32,12 @@ public class LampControl : MonoBehaviour
         // writer = new StreamWriter(filePath);
         if(!file.Exists){
             writer= file.CreateText();
-            writer.WriteLine("Date,Task1,Task2,Task3,Task4,Task5,Task6,Task7,Task8,Task9,Task10");
+            writer.WriteLine("Participant ID,Scene,Session,Date,Task1,Task2,Task3,Task4,Task5,Task6,Task7,Task8,Task9,Task10");
         } else {
             writer = file.AppendText();
         }
         
-        results = System.DateTime.Now.ToString("dd-MM-yy   hh:mm:ss");
+        results = id + "," + scene + "," + session + ","+ System.DateTime.Now.ToString("dd-MM-yy   hh:mm:ss");
         Debug.Log("Starting session");
         for(int i = 0; i < 10; i++){
             yield return new WaitForSeconds(Random.Range(2.0f, 5.0f));
