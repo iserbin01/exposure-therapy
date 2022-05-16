@@ -12,6 +12,7 @@ public class LampControl : MonoBehaviour
     StreamWriter writer;
     FileStream stream;
     FileInfo file;
+    AudioSource intro;
 
     // Start is called before the first frame update
     void Start()
@@ -33,7 +34,10 @@ public class LampControl : MonoBehaviour
     {
         filePath = getPath();
         file = new FileInfo(filePath);
-        yield return new WaitForSeconds(10.0f);
+        yield return new WaitForSeconds(5.0f);
+        intro = GameObject.Find("SessionIntro").GetComponent<AudioSource>();
+        intro.Play();
+        
         if(!file.Exists){
             writer= file.CreateText();
             writer.WriteLine("Participant ID,Scene,Session,Date,Task1,Task2,Task3,Task4,Task5,Task6,Task7,Task8,Task9,Task10");
@@ -61,7 +65,7 @@ public class LampControl : MonoBehaviour
         GameObject.Find("lamp_on").GetComponent<MeshRenderer>().enabled = true;
         GameObject.Find("lamp_off").GetComponent<MeshRenderer>().enabled = false;
         startTime = Time.time;
-        yield return new WaitUntil(() => Input.GetKeyDown("l"));
+        yield return new WaitUntil(() => Input.GetKeyDown("joystick button 0") || Input.GetKeyDown("h"));
         endTime = Time.time;
         GameObject.Find("lamp_off").GetComponent<MeshRenderer>().enabled = true;
         GameObject.Find("lamp_on").GetComponent<MeshRenderer>().enabled = false;

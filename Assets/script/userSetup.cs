@@ -11,11 +11,11 @@ public class userSetup : MonoBehaviour
     public int session = 0;
     void Start()
     {
-
     }
     // Update is called once per frame
     void Update(){
-        if (Input.GetKeyDown("b")){
+        if (Input.GetKeyDown("joystick button 0") ||Input.GetKeyDown("h")){
+            
             print("Ray casted");
             RaycastHit result;
             if (Physics.Raycast(this.gameObject.transform.position,this.gameObject.transform.forward,out result, Mathf.Infinity)){
