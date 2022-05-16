@@ -19,17 +19,21 @@ public class LampControl : MonoBehaviour
         scene = SceneManager.GetActiveScene().name;
         id = GameObject.Find("SessionInfo").GetComponent<SessionManager>().id;
         session = GameObject.Find("SessionInfo").GetComponent<SessionManager>().session;
-        StartCoroutine(LampTasks());
-       
+        StartCoroutine(Fade());
 
     }
-
+    IEnumerator Fade(){
+        yield return new WaitForSeconds(2.0f);
+        FadeScreen fade = GameObject.Find("Overlay").GetComponent<FadeScreen>();
+        StartCoroutine(fade.FadeIn());
+        yield return new WaitUntil(() => fade.faded == false);
+        StartCoroutine(LampTasks());
+    }
       IEnumerator LampTasks()
     {
         filePath = getPath();
         file = new FileInfo(filePath);
-        // stream = file.Open(FileMode.Append)
-        // writer = new StreamWriter(filePath);
+        yield return new WaitForSeconds(10.0f);
         if(!file.Exists){
             writer= file.CreateText();
             writer.WriteLine("Participant ID,Scene,Session,Date,Task1,Task2,Task3,Task4,Task5,Task6,Task7,Task8,Task9,Task10");
@@ -40,7 +44,7 @@ public class LampControl : MonoBehaviour
         results = id + "," + scene + "," + session + ","+ System.DateTime.Now.ToString("dd-MM-yy   hh:mm:ss");
         Debug.Log("Starting session");
         for(int i = 0; i < 10; i++){
-            yield return new WaitForSeconds(Random.Range(2.0f, 5.0f));
+            yield return new WaitForSeconds(Random.Range(5.0f, 10.0f));
             StartCoroutine(Task());
         }
         yield return new WaitForSeconds(2.0f);

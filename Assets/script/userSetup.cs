@@ -11,6 +11,7 @@ public class userSetup : MonoBehaviour
     public int session = 0;
     void Start()
     {
+
     }
     // Update is called once per frame
     void Update(){
@@ -49,10 +50,12 @@ public class userSetup : MonoBehaviour
                 case "RoomBtn":
                     GameObject.Find("SessionInfo").GetComponent<SessionManager>().id = id;
                     GameObject.Find("SessionInfo").GetComponent<SessionManager>().session = session;
-                    SceneManager.LoadScene("RoomScene");
+                    StartCoroutine(FadeAndLoad("RoomScene"));
                     break;
                 case "ElevatorBtn":
-                    SceneManager.LoadScene("ElevatorScene");
+                    GameObject.Find("SessionInfo").GetComponent<SessionManager>().id = id;
+                    GameObject.Find("SessionInfo").GetComponent<SessionManager>().session = session;
+                    StartCoroutine(FadeAndLoad("ElevatorScene"));
                     break;
                 default : break;
 
@@ -61,5 +64,13 @@ public class userSetup : MonoBehaviour
             }
         }
     }
-    
+    IEnumerator FadeAndLoad(string sceneName){
+        print("Fading");
+        FadeScreen fade = GameObject.Find("Overlay").GetComponent<FadeScreen>();
+        StartCoroutine(fade.FadeOut());
+        yield return new WaitUntil(() => fade.faded == true);
+        print(fade.faded);
+        SceneManager.LoadScene(sceneName);
+    }
 }
+
