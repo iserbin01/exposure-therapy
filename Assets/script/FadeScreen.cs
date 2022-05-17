@@ -22,7 +22,6 @@ public class FadeScreen : MonoBehaviour
     public IEnumerator FadeOut(){
         while (opacity < FULL_OPACITY){
             opacity+= (FULL_OPACITY*.05F);
-            print(opacity);
             image.color = new Color(0,0, 0, opacity);
             yield return new WaitForSeconds(.05F);
         }

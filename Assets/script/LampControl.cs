@@ -7,8 +7,9 @@ using System.IO;
 public class LampControl : MonoBehaviour
 {
     private bool pressed;
-    string filePath, results, scene;
-    int id, session;
+    string filePath, results, scene, nextScene;
+    int id, session, clicks;
+    SessionManager manager;
     StreamWriter writer;
     FileStream stream;
     FileInfo file;
@@ -17,9 +18,13 @@ public class LampControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        clicks = 0;
+        manager = GameObject.Find("SessionInfo").GetComponent<SessionManager>();
         scene = SceneManager.GetActiveScene().name;
-        id = GameObject.Find("SessionInfo").GetComponent<SessionManager>().id;
-        session = GameObject.Find("SessionInfo").GetComponent<SessionManager>().session;
+        print(scene);
+        id = manager.id;
+        session = manager.session;
+        nextScene = manager.nextScene;
         StartCoroutine(Fade());
 
     }
@@ -34,13 +39,13 @@ public class LampControl : MonoBehaviour
     {
         filePath = getPath();
         file = new FileInfo(filePath);
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(20.0f);
         intro = GameObject.Find("SessionIntro").GetComponent<AudioSource>();
         intro.Play();
         
         if(!file.Exists){
             writer= file.CreateText();
-            writer.WriteLine("Participant ID,Scene,Session,Date,Task1,Task2,Task3,Task4,Task5,Task6,Task7,Task8,Task9,Task10");
+            writer.WriteLine("Participant ID,Scene,Session,Date,Task1,Task2,Task3,Task4,Task5,Task6,Task7,Task8,Task9,Task10,False Clicks");
         } else {
             writer = file.AppendText();
         }
@@ -52,9 +57,16 @@ public class LampControl : MonoBehaviour
             StartCoroutine(Task());
         }
         yield return new WaitForSeconds(2.0f);
+        results += "," + clicks;
         writer.WriteLine(results);
         writer.Flush();
         writer.Close();
+        if (scene != nextScene){
+            StartCoroutine(FadeAndLoad(nextScene));
+        }
+        else{
+            StartCoroutine(FadeAndLoad("LoadScene"));
+        }
         
     }
       IEnumerator Task()
@@ -66,6 +78,7 @@ public class LampControl : MonoBehaviour
         GameObject.Find("lamp_off").GetComponent<MeshRenderer>().enabled = false;
         startTime = Time.time;
         yield return new WaitUntil(() => Input.GetKeyDown("joystick button 0") || Input.GetKeyDown("h"));
+        clicks--;
         endTime = Time.time;
         GameObject.Find("lamp_off").GetComponent<MeshRenderer>().enabled = true;
         GameObject.Find("lamp_on").GetComponent<MeshRenderer>().enabled = false;
@@ -79,11 +92,25 @@ public class LampControl : MonoBehaviour
                 return Application.dataPath + "/Data/"  + "results.csv";
                 //"Participant " + "   " + DateTime.Now.ToString("dd-MM-yy   hh-mm-ss") + ".csv";
         #elif UNITY_ANDROID
-                return Application.persistentDataPath+"results.csv";
+                return Application.persistentDataPath+"/results.csv";
         #elif UNITY_IPHONE
                 return Application.persistentDataPath+"/"+"results.csv";
         #else
                 return Application.dataPath +"/"+"results.csv";
         #endif
+    }
+
+    IEnumerator FadeAndLoad(string sceneName){
+        print("Fading");
+        FadeScreen fade = GameObject.Find("Overlay").GetComponent<FadeScreen>();
+        StartCoroutine(fade.FadeOut());
+        yield return new WaitUntil(() => fade.faded == true);
+        print(fade.faded);
+        SceneManager.LoadScene(sceneName);
+    }
+    void Update(){
+        if(Input.anyKeyDown){
+            clicks++;
+        }
     }
 }
