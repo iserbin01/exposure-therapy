@@ -5,6 +5,7 @@ using UnityEngine;
 public class SessionManager : MonoBehaviour
 {
     public int session, id;
+    public string nextScene;
     // Start is called before the first frame update
     void Start()
     {

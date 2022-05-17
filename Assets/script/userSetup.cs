@@ -7,10 +7,17 @@ using UnityEngine.SceneManagement;
 
 public class userSetup : MonoBehaviour
 {
-    public int id = 0;
-    public int session = 0;
-    void Start()
+    private int id = 0;
+    private int session = 0;
+    private SessionManager manager;
+    FadeScreen fade;
+    IEnumerator Start()
     {
+        yield return new WaitForSeconds(2.0f);
+        fade = GameObject.Find("Overlay").GetComponent<FadeScreen>();
+        StartCoroutine(fade.FadeIn());
+        yield return new WaitUntil(() => fade.faded == true);
+
     }
     // Update is called once per frame
     void Update(){
@@ -48,14 +55,22 @@ public class userSetup : MonoBehaviour
                     }
                     break;
                 case "RoomBtn":
-                    GameObject.Find("SessionInfo").GetComponent<SessionManager>().id = id;
-                    GameObject.Find("SessionInfo").GetComponent<SessionManager>().session = session;
-                    StartCoroutine(FadeAndLoad("RoomScene"));
+                    if(id > 0 && session > 0){
+                        manager = GameObject.Find("SessionInfo").GetComponent<SessionManager>();
+                        manager.id = id;
+                        manager.session = session;
+                        manager.nextScene = "ElevatorScene";
+                        StartCoroutine(FadeAndLoad("RoomScene"));
+                    };
                     break;
                 case "ElevatorBtn":
-                    GameObject.Find("SessionInfo").GetComponent<SessionManager>().id = id;
-                    GameObject.Find("SessionInfo").GetComponent<SessionManager>().session = session;
-                    StartCoroutine(FadeAndLoad("ElevatorScene"));
+                    if(id > 0 && session > 0){
+                        manager = GameObject.Find("SessionInfo").GetComponent<SessionManager>();
+                        manager.id = id;
+                        manager.session = session;
+                        manager.nextScene = "RoomScene";
+                        StartCoroutine(FadeAndLoad("ElevatorScene"));
+                    }
                     break;
                 default : break;
 
@@ -66,10 +81,8 @@ public class userSetup : MonoBehaviour
     }
     IEnumerator FadeAndLoad(string sceneName){
         print("Fading");
-        FadeScreen fade = GameObject.Find("Overlay").GetComponent<FadeScreen>();
         StartCoroutine(fade.FadeOut());
         yield return new WaitUntil(() => fade.faded == true);
-        print(fade.faded);
         SceneManager.LoadScene(sceneName);
     }
 }
