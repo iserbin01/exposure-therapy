@@ -9,6 +9,10 @@ public class SessionManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (FindObjectsOfType<SessionManager>().Length != 1)
+     {
+         Destroy(this.gameObject);
+     }
         DontDestroyOnLoad(this.gameObject);
     }
     void Update(){

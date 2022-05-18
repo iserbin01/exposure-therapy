@@ -5,14 +5,18 @@ using UnityEngine.UI;
 
 public class FadeScreen : MonoBehaviour
 {
-    private float opacity = 0;
+    private float opacity = 1;
     private float FULL_OPACITY = 1;
     private Image image;
-    public bool faded = false;
+    public bool faded = true;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (FindObjectsOfType<SessionManager>().Length != 1)
+        {
+            Destroy(this.gameObject);
+        }
         image = this.GetComponent<Image>();
         DontDestroyOnLoad(this.gameObject);
     }

@@ -16,7 +16,7 @@ public class userSetup : MonoBehaviour
         yield return new WaitForSeconds(2.0f);
         fade = GameObject.Find("Overlay").GetComponent<FadeScreen>();
         StartCoroutine(fade.FadeIn());
-        yield return new WaitUntil(() => fade.faded == true);
+        yield return new WaitUntil(() => fade.faded == false);
 
     }
     // Update is called once per frame
